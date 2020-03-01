@@ -1,36 +1,41 @@
 [第一回 初窥门径](chap1.md)
-# 第二回 组合模式
+# 第二回 `Runner`全家桶
 
 本回主要角色介绍
-| 名称   |      类型      |  事迹 |
-|----------|:-------------:|------:|
-| **万大侠** |  `AllDefaultPossibilitiesBuilder` | 构建 `Runner` 的高手 |
-| **桶大侠** |  `Suite`   | `Runner` 全家桶 |
+| 名称 | 类型 | 事迹 |
+|----------|:-------------:|:------|
+| **万大侠** | `AllDefaultPossibilitiesBuilder` | `Runner` 的**万**能构建者 |
+| **桶大侠** | `Suite` | `Runner` 全家**桶** |
 
 
-
-上回说到 `Junit` 里有两大步骤, *解析要测试的类* 和 *执行测试*.
+上回说到 `Junit` 里有两大步骤,
+*解析要测试的类* 和 *执行测试*.
 这一回我们先看看如何 *解析要测试的类* .
 先来到 `Request` 类的 `classes(Computer computer, Class<?>... classes) ` 方法(如下图红框所示)
 ![IDEA 中的截图](pic/Request.png)
-这个函数里做了如下三件事(分别位于图中的 74 行, 75 行, 76 行)
+这个函数里做了如下三件事(分别位于图中的 `74` 行, `75` 行, `76` 行)
 1. 创建 `builder`(从名字可以看出来，后面会出现 *构建者模式* )
 2. 利用 `builder` 创建一个 `Runner` 的实例(实例的名称是 `suite`)
 3. 把第`2`步生成的 `Runner` 实例转化为 `Request` 类型的实例
 
 
-由于上述三个步骤中出现的 `builder` 和 `suite` 的戏份比较多,还是给它们分别起个名字吧
+由于上述三个步骤中出现的 `builder` 和 `suite` 的戏份比较多,
+还是给它们分别起个名字吧
 * 将 `builder` 称为 **万能构建者** (因为它在构建 `Runner` 方面确实很在行)
 * 将 `suite` 称为 **Runner全家桶** (由于 `suite` 将各个 `Runner` 组合在了一起, 有点像 KFC/麦当劳 的全家桶)
 
-不过感觉名字还是有点长, 干脆把这个 `builder` 称为 **万大侠**,
+不过感觉名字还是有点长, 
+干脆把这个 `builder` 称为 **万大侠**,
 把这个 `suite` 称为 **桶大侠** 吧.
 
-第2步的逻辑较为复杂,是这一回的重点.
-我们先把第1步和第3步的逻辑看完,然后集中精力看第2步.
+第`2`步的逻辑较为复杂,
+是这一回的重点.
+我们先把第`1`步和第`3`步的逻辑看完,
+然后再集中精力看第`2`步.
 
 ## 第1步 创建 `builder`
-这一步的逻辑比较简单, 就是创建了一个 `AllDefaultPossibilitiesBuilder` 类的实例(这个类在构建 `Runner` 时功能比较强, 后面会见识到, 这里先不用管)
+这一步的逻辑比较简单, 
+就是创建了一个 `AllDefaultPossibilitiesBuilder` 类的实例(这个类在构建 `Runner` 时功能比较强, 后面会见识到, 这里先不用管)
 ![IDEA 中的截图](pic/Builder.png)
 
 ## 第3步 转化为 `Request` 的实例
@@ -43,7 +48,7 @@
 ## 第2步 生成 `Runner` 类型的 `suite`
 这一步调用了 `Computer` 类的 `getSuite(final RunnerBuilder builder, Class<?>[] classes)` 方法(逻辑如下图)
 ![IDEA 中的截图](pic/Computer.png)
-其逻辑是:通过调用 `Suite` 的构造函数来生成 `Suite` 类的实例.
+其逻辑是: 通过调用 `Suite` 的构造函数来生成 `Suite` 类的实例.
 这里的细节逻辑还是挺复杂的, 
 我们先来介绍一下它的整体思路(不过也只是我个人的理解),
 然后再去看细节.
@@ -57,7 +62,8 @@
 ![IDEA 中的截图](pic/Suite.png)
 
 
-`Runner` 是一个抽象类,其 `Javadoc` 中提到
+`Runner` 是一个抽象类,
+其 `Javadoc` 中提到
 > A `Runner` runs tests and notifies a {@link org.junit.runner.notification.RunNotifier}
 > of significant events as it does so.
 
@@ -85,7 +91,8 @@
 大的行政区划可以看成是小的行政区划的组合
 (国家可以是省的组合, 省可以是市的组合, 市可以是区县的组合)
 
-回到正题来,假如我们希望对 `A` `B` `C` 三个普通的类进行单元测试,那么可以用如下的代码
+回到正题来,假如我们希望对 `A` `B` `C` 三个普通的类进行单元测试,
+那么可以用如下的代码
 ```java
 JUnitCore.runClasses(A.class, B.class, C.class);
 ```
@@ -95,6 +102,7 @@ JUnitCore.runClasses(A.class, B.class, C.class);
 `ra` `rb` `rc` 都会是 **桶大侠**`suite` 的子节点.
 ![IDEA 中的截图](pic/rarbrc.png)
 
-不过具体是如何构造出这个 **桶大侠** 的呢,且听[下回](chap3.md)分解
+不过具体是如何构造出这个 **桶大侠** 的呢,
+且听[下回](chap3.md)分解
 
-[第三回 构建者(`builder`)模式](chap3.md)
+[第三回 五兄弟同心造`Runner`](chap3.md)
