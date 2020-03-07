@@ -8,16 +8,37 @@
 | **桶大侠** | `Suite` | `Runner` 全家**桶** |
 
 
-上回说到 `Junit` 里有两大步骤,
-*解析要测试的类* 和 *执行测试*.
-这一回我们先看看如何 *解析要测试的类* .
+上回说到 `Junit` 里有如下两大步骤
+> * 解析要测试的类 
+> * 执行测试
+
+这一回我们先看看如何 **解析要测试的类** .
 先来到 `Request` 类的 `classes(Computer computer, Class<?>... classes) ` 方法(如下图红框所示)
 ![IDEA 中的截图](pic/Request.png)
-这个函数里做了如下三件事(分别位于图中的 `74` 行, `75` 行, `76` 行)
-1. 创建 `builder`(从名字可以看出来，后面会出现 *构建者模式* )
-2. 利用 `builder` 创建一个 `Runner` 的实例(实例的名称是 `suite`)
-3. 把第`2`步生成的 `Runner` 实例转化为 `Request` 类型的实例
-
+这个方法里主要做了三件事(具体内容我写在了下面的注释里)
+```java
+    /**
+     * Create a <code>Request</code> that, when processed, will run all the tests
+     * in a set of classes.
+     *
+     * @param computer Helps construct Runners from classes
+     * @param classes the classes containing the tests
+     * @return a <code>Request</code> that will cause all tests in the classes to be run
+     */
+    public static Request classes(Computer computer, Class<?>... classes) {
+        try {
+            // 1. 创建 builder(从名字可以看出来, 后面会出现构建者模式)
+            AllDefaultPossibilitiesBuilder builder = new AllDefaultPossibilitiesBuilder(true);
+            // 2. 利用 builder 创建一个 Runner 的实例(实例的名称是 suite)
+            Runner suite = computer.getSuite(builder, classes);
+            // 3. 把第2步生成的 Runner 实例转化为 Request 类型的实例并返回
+            return runner(suite);
+        } catch (InitializationError e) {
+            throw new RuntimeException(
+                    "Bug in saff's brain: Suite constructor, called as above, should always complete");
+        }
+    }
+```
 
 由于上述三个步骤中出现的 `builder` 和 `suite` 的戏份比较多,
 还是给它们分别起个名字吧
@@ -50,7 +71,7 @@
 ![IDEA 中的截图](pic/Computer.png)
 其逻辑是: 通过调用 `Suite` 的构造函数来生成 `Suite` 类的实例.
 这里的细节逻辑还是挺复杂的, 
-我们先来介绍一下它的整体思路(不过也只是我个人的理解),
+先介绍一下它的整体思路(只是我个人的理解),
 然后再去看细节.
 
 `JUnit` 中有几个比较重要的类(可以参看 [参考文章[1]](https://blog.saymagic.cn/android/2016/09/30/understand-Junit.html) 的相关描述),
@@ -73,19 +94,24 @@
 
 `Suite` 可以把若干个 `Runner` 打包成一个测试套件, 
 而 `Suite` 自己也是 `Runner`,
-所以这里用到了 *组合模式*
+所以这里用到了 **组合模式**
 
 生活中也有一些事物是这种(与 `Runner-Suite` 类似的)组合关系
 * **考试**
-大部分学生应该都接触过期末考试, 期末考试既是考试, 也是考试的组合(或许可以称为 `suite of exams`)
+期末考试既是考试, 也是考试的组合(或许可以称为 `suite of exams`)
 * **景点** 
-作为游客,我们去一个大的景点时,经常会看到里面还包含小景点.
-所以这个大的景点本身是一个景点,同时它也是景点的组合(比如西湖景点和具体的西湖十景就是这种关系).
+大的景点经常会包含小景点.
+所以大的景点本身是一个景点,
+同时它也是景点的组合(比如西湖景点和具体的西湖十景就是这种关系).
 * **书** 
-丛书也是书.二十四史是史书的组合,我们也可以把二十四史看做一部大书
+丛书也是书.
+二十四史是史书的组合,
+我们也可以把二十四史看做一部大书
 * **部门(或组织架构)** 
-一个大部门下常常会有子部门,所以大部门也可以看成部门的组合.
-这里可以稍微拓展一下,其实很多组织架构都有这种组合关系.
+一个大部门下常常会有子部门,
+所以大部门也可以看成部门的组合.
+这里可以稍微拓展一下,
+其实很多组织架构都有这种组合关系.
 以党组织为例,一个比较大的支部可以看成是支部的组合.
 * **行政区划**
 大的行政区划可以看成是小的行政区划的组合

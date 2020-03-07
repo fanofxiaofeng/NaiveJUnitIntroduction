@@ -19,9 +19,13 @@ public Result run(Computer computer, Class<?>... classes) {
 1. 调用 `Request` 类中的 `classes(Computer computer, Class<?>... classes)` 方法, 从而生成 `Request` 类的实例
 2. 调用 `JUnitCore` 类中的 `run(Request request)` 方法
 
-可以猜测一下 `JUnit` 运作的原理应该是先解析要测试的类,然后再执行测试.
-上面的第`1`步中会解析要测试的类,
-上面的第`2`步中会执行测试.
+可以猜测一下 `JUnit` 运作的核心步骤应该是如下两步
+* 解析要测试的类
+* 执行测试
+
+事实上也的确如此.
+上面的第`1`步中会 **解析要测试的类**,
+上面的第`2`步中会 **执行测试**.
 
 到这里,`JUnit` 最外层的逻辑就看完了,
 是不是觉得并不难呢?
@@ -30,7 +34,7 @@ public Result run(Computer computer, Class<?>... classes) {
 我们继续看这两个步骤的内部逻辑.
 为了便于描述,
 把上述的两个步骤分别称作
-`Request.classes(...)` 和 `JUnitCore.run(...)` 吧.
+`Request.classes(...)` 和 `JUnitCore.run(...)` 吧(当不关心方法中的参数列表时, 我会用`...`来表示参数列表, 后文也会使用表示法).
 
 欲知 `Request.classes(...)` 中细节如何,且听[下回](chap2.md)分解
 
